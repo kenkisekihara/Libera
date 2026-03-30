@@ -21,12 +21,19 @@ export default function HomePage() {
         const data = await response.json();
         
         if (data.contents) {
+          const getCategoryName = (cat: any) => {
+            if (!cat) return 'home';
+            if (typeof cat === 'string') return cat;
+            if (Array.isArray(cat)) return typeof cat[0] === 'string' ? cat[0] : (cat[0]?.name || 'home');
+            return cat.name || 'home';
+          };
+
           const mappedArticles: Article[] = data.contents.map((item: any) => ({
             id: item.id,
             title: item.title,
             date: new Date(item.publishedAt || item.createdAt).toLocaleDateString('ja-JP').replace(/\//g, '.'),
             image: item.image?.url || 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&q=80&w=800',
-            category: item.category?.[0] || 'home'
+            category: getCategoryName(item.category)
           }));
           setArticles(mappedArticles);
         }

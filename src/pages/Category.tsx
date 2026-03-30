@@ -5,6 +5,7 @@ import { Article } from '../types';
 
 export default function CategoryPage() {
   const { categoryName } = useParams<{ categoryName: string }>();
+  const decodedCategory = decodeURIComponent(categoryName || '');
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -21,16 +22,23 @@ export default function CategoryPage() {
         const data = await response.json();
         
         if (data.contents) {
+          const getCategoryName = (cat: any) => {
+            if (!cat) return 'home';
+            if (typeof cat === 'string') return cat;
+            if (Array.isArray(cat)) return typeof cat[0] === 'string' ? cat[0] : (cat[0]?.name || 'home');
+            return cat.name || 'home';
+          };
+
           const mappedArticles: Article[] = data.contents
             .map((item: any) => ({
               id: item.id,
               title: item.title,
               date: new Date(item.publishedAt || item.createdAt).toLocaleDateString('ja-JP').replace(/\//g, '.'),
               image: item.image?.url || 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&q=80&w=800',
-              category: item.category?.[0] || 'home'
+              category: getCategoryName(item.category)
             }))
             .filter((article: Article) => 
-              categoryName === 'home' ? true : article.category === categoryName
+              decodedCategory === 'home' ? true : article.category.toLowerCase() === decodedCategory.toLowerCase()
             );
           setArticles(mappedArticles);
         }
@@ -53,10 +61,10 @@ export default function CategoryPage() {
     >
       <div className="relative text-center mb-24 select-none pointer-events-none">
         <div className="font-serif italic text-[clamp(6rem,15vw,12rem)] leading-[0.8] text-white/5">
-          {categoryName?.toUpperCase()}
+          {decodedCategory.toUpperCase()}
         </div>
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-serif text-[clamp(2rem,5vw,4rem)] text-white tracking-[0.2em] whitespace-nowrap">
-          {categoryName?.toUpperCase()}
+          {decodedCategory.toUpperCase()}
         </div>
       </div>
 

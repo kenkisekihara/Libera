@@ -20,12 +20,19 @@ export default function ArticlePage() {
         const data = await response.json();
         const found = data.contents.find((item: any) => item.id === id);
         if (found) {
+          const getCategoryName = (cat: any) => {
+            if (!cat) return 'home';
+            if (typeof cat === 'string') return cat;
+            if (Array.isArray(cat)) return typeof cat[0] === 'string' ? cat[0] : (cat[0]?.name || 'home');
+            return cat.name || 'home';
+          };
+
           setArticle({
             id: found.id,
             title: found.title,
             date: new Date(found.publishedAt || found.createdAt).toLocaleDateString('ja-JP').replace(/\//g, '.'),
             image: found.image?.url,
-            category: found.category?.[0] || 'home',
+            category: getCategoryName(found.category),
             content: found.content || found.body || ''
           });
         }
