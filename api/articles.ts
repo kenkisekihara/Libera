@@ -18,8 +18,9 @@ export default async function handler(req: any, res: any) {
   try {
     const response = await client.get({
       endpoint: 'articles',
+      queries: { limit: 10, orders: "-publishedAt" },
     });
-    res.status(200).json(response.contents);
+    res.status(200).json(response);
   } catch (error) {
     console.error('Error fetching articles from microCMS:', error);
     res.status(500).json({ error: 'Failed to fetch articles' });
