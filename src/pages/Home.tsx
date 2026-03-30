@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { Article, CATEGORIES } from '../types';
 
 export default function HomePage() {
@@ -66,6 +67,15 @@ export default function HomePage() {
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.8, ease: "easeOut" }}
     >
+      <Helmet>
+        <title>Libera | Official Blog</title>
+        <meta name="description" content="孤独とは、誰にも邪魔されない自由のこと。「Libera」は、勉強、音楽、美、そして日々の雫を記録し、僕だけの世界観を記録的に構築するためのアーカイブ。" />
+        <meta property="og:title" content="Libera | Official Blog" />
+        <meta property="og:description" content="孤独とは、誰にも邪魔されない自由のこと。「Libera」は、勉強、音楽、美、そして日々の雫を記録し、僕だけの世界観を記録的に構築するためのアーカイブ。" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={window.location.href} />
+      </Helmet>
+
       <header className="relative min-h-screen flex flex-col justify-start overflow-hidden pt-48">
         <div className="max-w-screen-2xl w-full mx-auto px-8 md:px-16 mb-8">
           <div className="flex items-center gap-5">

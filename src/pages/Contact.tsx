@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
@@ -41,6 +42,15 @@ export default function ContactPage() {
       transition={{ duration: 0.8 }}
       className="pt-[180px] pb-[100px] min-h-[80vh] px-8 md:px-16 max-w-2xl mx-auto"
     >
+      <Helmet>
+        <title>Contact | Libera</title>
+        <meta name="description" content="Liberaへのお問い合わせはこちらから。" />
+        <meta property="og:title" content="Contact | Libera" />
+        <meta property="og:description" content="Liberaへのお問い合わせはこちらから。" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={window.location.href} />
+      </Helmet>
+
       <div className="relative text-center mb-24 select-none pointer-events-none">
         <div className="font-serif italic text-[clamp(6rem,15vw,12rem)] leading-[0.8] text-white/5">
           CONTACT

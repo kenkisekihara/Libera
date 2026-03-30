@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { useParams, Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { Article } from '../types';
 
 export default function ArticlePage() {
@@ -54,6 +55,17 @@ export default function ArticlePage() {
       animate={{ opacity: 1 }}
       className="pt-48 pb-32 px-8 md:px-16 max-w-4xl mx-auto"
     >
+      <Helmet>
+        <title>{article.title} | Libera</title>
+        <meta name="description" content={article.content?.substring(0, 120).replace(/<[^>]*>?/gm, '') + '...'} />
+        <meta property="og:title" content={`${article.title} | Libera`} />
+        <meta property="og:description" content={article.content?.substring(0, 120).replace(/<[^>]*>?/gm, '') + '...'} />
+        <meta property="og:type" content="article" />
+        <meta property="og:url" content={window.location.href} />
+        {article.image && <meta property="og:image" content={article.image} />}
+        <meta name="twitter:card" content="summary_large_image" />
+      </Helmet>
+
       <div className="mb-12 text-center">
         <div className="text-[10px] tracking-[0.4em] text-white/40 uppercase mb-4">{article.category}</div>
         <h1 className="text-3xl md:text-5xl font-light text-white tracking-widest leading-tight mb-6">{article.title}</h1>

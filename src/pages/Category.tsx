@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { useParams, Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { Article } from '../types';
 
 export default function CategoryPage() {
@@ -59,6 +60,15 @@ export default function CategoryPage() {
       transition={{ duration: 0.8 }}
       className="pt-[180px] pb-[100px] min-h-[80vh] px-8 md:px-16"
     >
+      <Helmet>
+        <title>{decodedCategory.toUpperCase()} | Libera</title>
+        <meta name="description" content={`Liberaの${decodedCategory}カテゴリの記事一覧です。`} />
+        <meta property="og:title" content={`${decodedCategory.toUpperCase()} | Libera`} />
+        <meta property="og:description" content={`Liberaの${decodedCategory}カテゴリの記事一覧です。`} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={window.location.href} />
+      </Helmet>
+
       <div className="relative text-center mb-24 select-none pointer-events-none">
         <div className="font-serif italic text-[clamp(6rem,15vw,12rem)] leading-[0.8] text-white/5">
           {decodedCategory.toUpperCase()}
