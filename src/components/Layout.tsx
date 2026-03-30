@@ -33,7 +33,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       <nav 
         className={`fixed top-0 left-0 w-full z-50 px-6 md:px-16 transition-all duration-500 flex justify-between items-center ${
           isScrolled 
-            ? 'bg-bg/85 backdrop-blur-md py-4 md:py-6 border-b border-white/5' 
+            ? 'bg-bg/85 backdrop-blur-md py-4 md:py-6' 
             : 'bg-transparent py-8 md:py-10'
         }`}
       >
