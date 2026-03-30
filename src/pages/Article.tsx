@@ -82,7 +82,7 @@ export default function ArticlePage() {
       />
 
       <div className="mt-32 text-center">
-        <Link to="/" className="inline-block px-12 py-4 border border-white/60 text-[10px] tracking-[0.5em] uppercase text-white/90 hover:text-white hover:border-white transition-all duration-300">Back to Home</Link>
+        <Link to="/" className="inline-block px-12 py-4 border border-white/60 text-[10px] tracking-[0.5em] uppercase text-white/90 hover:text-white hover:border-white transition-all duration-300">Back Home</Link>
       </div>
     </motion.div>
   );
