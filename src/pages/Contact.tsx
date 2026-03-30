@@ -30,11 +30,7 @@ export default function ContactPage() {
           <div className="space-y-8">
             <div>
               <div className="text-[10px] tracking-[0.5em] text-white/30 uppercase mb-2">Email</div>
-              <div className="text-white font-light tracking-widest">contact@libera.archive</div>
-            </div>
-            <div>
-              <div className="text-[10px] tracking-[0.5em] text-white/30 uppercase mb-2">Social</div>
-              <div className="text-white font-light tracking-widest">@libera_archive</div>
+              <div className="text-white font-light tracking-widest">info@libera-y.com</div>
             </div>
           </div>
         </div>
