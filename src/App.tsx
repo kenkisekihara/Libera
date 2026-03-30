@@ -51,6 +51,8 @@ const CATEGORIES = [
 export default function App() {
   const [currentCategory, setCurrentCategory] = useState<Category>('home');
   const [isScrolled, setIsScrolled] = useState(false);
+  const [articles, setArticles] = useState<Article[]>(ARTICLES);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -58,6 +60,35 @@ export default function App() {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const fetchArticles = async () => {
+      try {
+        const response = await fetch('/api/articles');
+        if (!response.ok) throw new Error('Failed to fetch');
+        const data = await response.json();
+        
+        if (data.contents && data.contents.length > 0) {
+          // Map microCMS response to our Article type
+          const mappedArticles: Article[] = data.contents.map((item: any) => ({
+            id: item.id,
+            title: item.title,
+            date: new Date(item.publishedAt || item.createdAt).toLocaleDateString('ja-JP').replace(/\//g, '.'),
+            image: item.image?.url || 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&q=80&w=800',
+            category: item.category?.[0] || 'home'
+          }));
+          setArticles(mappedArticles);
+        }
+      } catch (error) {
+        console.error('Error fetching articles:', error);
+        // Fallback to mock data (already set in initial state)
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchArticles();
   }, []);
 
   const navigateTo = (cat: Category) => {
@@ -137,7 +168,7 @@ export default function App() {
                     ease: "linear" 
                   }}
                 >
-                  {[...ARTICLES, ...ARTICLES].map((article, idx) => (
+                  {[...articles, ...articles].map((article, idx) => (
                     <div key={`${article.id}-${idx}`} className="flex-none w-[450px] mr-12 group cursor-pointer">
                       <div className="w-full aspect-square overflow-hidden bg-[#151921]">
                         <img 
