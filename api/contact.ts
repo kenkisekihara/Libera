@@ -1,0 +1,35 @@
+import { Resend } from 'resend';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+export default async function handler(req: any, res: any) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  const { name, email, message } = req.body;
+
+  if (!name || !email || !message) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  try {
+    const data = await resend.emails.send({
+      from: 'Libera Contact <onboarding@resend.dev>',
+      to: ['kenki.sekihara@digiphilon.com'], // User's email from context
+      subject: `New Contact Message from ${name}`,
+      html: `
+        <h2>New Contact Message</h2>
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Message:</strong></p>
+        <p>${message.replace(/\n/g, '<br>')}</p>
+      `,
+    });
+
+    return res.status(200).json({ success: true, data });
+  } catch (error: any) {
+    console.error('Error sending email via Resend:', error);
+    return res.status(500).json({ error: error.message || 'Failed to send email' });
+  }
+}

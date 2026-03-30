@@ -4,6 +4,7 @@ import Layout from './components/Layout';
 import HomePage from './pages/Home';
 import CategoryPage from './pages/Category';
 import ArticlePage from './pages/Article';
+import ContactPage from './pages/Contact';
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/category/:categoryName" element={<CategoryPage />} />
             <Route path="/article/:id" element={<ArticlePage />} />
+            <Route path="/contact" element={<ContactPage />} />
           </Routes>
         </AnimatePresence>
       </Layout>

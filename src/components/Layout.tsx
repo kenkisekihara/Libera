@@ -57,17 +57,20 @@ export default function Layout({ children }: { children: ReactNode }) {
             </div>
           </div>
           <div className="pl-12 relative flex items-center">
-            <a href="#" className="contact-btn uppercase">
+            <Link to="/contact" className="contact-btn uppercase">
               Contact
-            </a>
+            </Link>
           </div>
         </div>
       </nav>
 
       <main>{children}</main>
 
-      <footer className="py-40 text-center">
+      <footer className="py-40 text-center flex flex-col items-center">
         <Link to="/" className="brand-logo-styled text-4xl mb-8 opacity-60 cursor-pointer">Libera</Link>
+        <div className="flex space-x-8 mb-12">
+          <Link to="/contact" className="text-[9px] tracking-[0.5em] uppercase text-white/30 hover:text-white transition-colors">Contact</Link>
+        </div>
         <p className="text-[7px] text-gray-700 tracking-[1.2em] uppercase">© 2026 LIBERA.</p>
       </footer>
     </div>
