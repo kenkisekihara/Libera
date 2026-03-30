@@ -109,7 +109,7 @@ export default function App() {
         }`}
       >
         <button onClick={() => navigateTo('home')} className="flex flex-col group text-left">
-          <span className="brand-logo-styled text-[2.8rem]">Líbera</span>
+          <span className="brand-logo-styled text-[2.8rem]">Libera</span>
         </button>
 
         <div className="hidden md:flex space-x-12 text-[10px] tracking-[0.5em] uppercase items-center font-medium">
@@ -195,10 +195,10 @@ export default function App() {
                 <div className="w-[60px] h-px bg-white/60" />
               </div>
               
-              <h2 className="brand-logo-styled text-[clamp(4rem,10vw,8rem)] mb-16">Líbera</h2>
+              <h2 className="brand-logo-styled text-[clamp(4rem,10vw,8rem)] mb-16">Libera</h2>
               <div className="text-[14px] leading-[3] font-extralight tracking-[0.25em] text-white/70 max-w-[800px] mb-32">
                 孤独とは、誰にも邪魔されない自由のこと。<br />
-                「Líbera」は、勉強、音楽、美、そして日々の雫を記録し、<br />
+                「Libera」は、勉強、音楽、美、そして日々の雫を記録し、<br />
                 僕だけの世界観を記録的に構築するためのアーカイブ。
               </div>
 
@@ -269,8 +269,8 @@ export default function App() {
       </AnimatePresence>
 
       <footer className="py-40 text-center">
-        <button onClick={() => navigateTo('home')} className="brand-logo-styled text-4xl mb-8 opacity-60 cursor-pointer">Líbera</button>
-        <p className="text-[7px] text-gray-700 tracking-[1.2em] uppercase">© 2026 LÍBERA.</p>
+        <button onClick={() => navigateTo('home')} className="brand-logo-styled text-4xl mb-8 opacity-60 cursor-pointer">Libera</button>
+        <p className="text-[7px] text-gray-700 tracking-[1.2em] uppercase">© 2026 LIBERA.</p>
       </footer>
     </div>
   );
