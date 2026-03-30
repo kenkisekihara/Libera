@@ -11,7 +11,11 @@ export default function HomePage() {
     const fetchArticles = async () => {
       try {
         const response = await fetch('/api/articles');
-        if (!response.ok) throw new Error('Failed to fetch');
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}));
+          console.error('Fetch failed:', response.status, errData);
+          throw new Error('Failed to fetch');
+        }
         const data = await response.json();
         
         if (data.contents) {
