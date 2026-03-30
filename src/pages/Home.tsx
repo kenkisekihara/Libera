@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { motion } from 'motion/react';
+import { motion, useMotionValue, useAnimationFrame } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Article, CATEGORIES } from '../types';
@@ -8,7 +8,12 @@ export default function HomePage() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loopDistance, setLoopDistance] = useState(0);
   const sliderRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+
+  const x = useMotionValue(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
     const fetchArticles = async () => {
@@ -55,6 +60,45 @@ export default function HomePage() {
     }
   }, [articles]);
 
+  // Auto-scroll animation
+  useAnimationFrame((t, delta) => {
+    if (loopDistance > 0 && !isDragging && !isHovered) {
+      const speed = loopDistance / (articles.length * 8000); // px per ms
+      let newX = x.get() - speed * delta;
+      if (newX <= -loopDistance) {
+        newX += loopDistance;
+      }
+      x.set(newX);
+    }
+  });
+
+  // Wheel event for touchpad scrolling
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const onWheel = (e: WheelEvent) => {
+      if (loopDistance === 0) return;
+      
+      // Only intercept horizontal scrolling
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+        e.preventDefault();
+        let newX = x.get() - e.deltaX;
+        
+        // Infinite wrap around
+        if (newX <= -loopDistance) {
+          newX += loopDistance;
+        } else if (newX > 0) {
+          newX -= loopDistance;
+        }
+        x.set(newX);
+      }
+    };
+
+    container.addEventListener('wheel', onWheel, { passive: false });
+    return () => container.removeEventListener('wheel', onWheel);
+  }, [loopDistance, x]);
+
   // Repeat articles to ensure the slider is always full and loops seamlessly
   const displayArticles = articles.length > 0 
     ? (articles.length < 4 ? [...articles, ...articles, ...articles, ...articles] : [...articles, ...articles])
@@ -84,22 +128,21 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className="w-screen overflow-hidden relative pb-24 cursor-grab active:cursor-grabbing">
+        <div 
+          ref={containerRef}
+          className="w-screen overflow-hidden relative pb-24 cursor-grab active:cursor-grabbing"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
           <motion.div 
             ref={sliderRef}
             drag="x"
             dragConstraints={{ right: 0, left: -loopDistance }}
             dragElastic={0.2}
             dragTransition={{ bounceStiffness: 100, bounceDamping: 20 }}
-            animate={loopDistance > 0 ? { x: [0, -loopDistance] } : {}}
-            transition={{ 
-              x: {
-                repeat: Infinity,
-                repeatType: "loop",
-                duration: articles.length * 8, // Adjust speed based on item count
-                ease: "linear",
-              }
-            }}
+            onDragStart={() => setIsDragging(true)}
+            onDragEnd={() => setIsDragging(false)}
+            style={{ x }}
             className="flex px-8 md:px-16 touch-pan-y"
           >
             {displayArticles.map((article, idx) => (
