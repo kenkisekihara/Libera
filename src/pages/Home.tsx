@@ -5,7 +5,7 @@ import { Article, CATEGORIES } from '../types';
 
 export default function HomePage() {
   const [articles, setArticles] = useState<Article[]>([]);
-  const [dragWidth, setDragWidth] = useState(0);
+  const [loopDistance, setLoopDistance] = useState(0);
   const sliderRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
@@ -38,10 +38,19 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
-    if (sliderRef.current) {
-      setDragWidth(sliderRef.current.scrollWidth - sliderRef.current.offsetWidth);
+    if (sliderRef.current && articles.length > 0) {
+      // Calculate the width of exactly one set of articles
+      // Since we repeat the list, the loop distance is total width divided by the number of repetitions
+      const totalWidth = sliderRef.current.scrollWidth;
+      const repetitions = articles.length < 4 ? 4 : 2;
+      setLoopDistance(totalWidth / repetitions);
     }
   }, [articles]);
+
+  // Repeat articles to ensure the slider is always full and loops seamlessly
+  const displayArticles = articles.length > 0 
+    ? (articles.length < 4 ? [...articles, ...articles, ...articles, ...articles] : [...articles, ...articles])
+    : [];
 
   return (
     <motion.div
@@ -62,13 +71,22 @@ export default function HomePage() {
           <motion.div 
             ref={sliderRef}
             drag="x"
-            dragConstraints={{ right: 0, left: -dragWidth }}
-            dragElastic={0.1}
+            dragConstraints={{ right: -loopDistance * (displayArticles.length / articles.length - 1), left: -loopDistance }}
+            dragElastic={0.05}
+            animate={loopDistance > 0 ? { x: [0, -loopDistance] } : {}}
+            transition={{ 
+              x: {
+                repeat: Infinity,
+                repeatType: "loop",
+                duration: articles.length * 8, // Adjust speed based on item count
+                ease: "linear",
+              }
+            }}
             className="flex px-8 md:px-16"
           >
-            {articles.map((article) => (
+            {displayArticles.map((article, idx) => (
               <div 
-                key={article.id} 
+                key={`${article.id}-${idx}`} 
                 onClick={() => navigate(`/article/${article.id}`)} 
                 className="flex-none w-[300px] md:w-[450px] mr-12 group cursor-pointer select-none"
               >
