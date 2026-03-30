@@ -115,9 +115,9 @@ export default function HomePage() {
         </div>
         
         <h2 className="brand-logo-styled text-[clamp(4rem,10vw,8rem)] mb-16">Libera</h2>
-        <div className="text-[14px] leading-[3] font-extralight tracking-[0.25em] text-white/70 max-w-[800px] mb-32">
-          孤独とは、誰にも邪魔されない自由のこと。<br />
-          「Libera」は、勉強、音楽、美、そして日々の雫を記録し、<br />
+        <div className="text-[14px] leading-relaxed md:leading-[3] font-extralight tracking-[0.25em] text-white/70 max-w-[800px] mb-32 px-4 md:px-0">
+          孤独とは、誰にも邪魔されない自由のこと。<br className="hidden md:block" />
+          「Libera」は、勉強、音楽、美、そして日々の雫を記録し、<br className="hidden md:block" />
           僕だけの世界観を記録的に構築するためのアーカイブ。
         </div>
 
@@ -139,7 +139,7 @@ export default function HomePage() {
                 className={`concept-grid-item ${cat.color} p-16 md:p-20 flex flex-col items-center text-center group`}
               >
                 <div className={`text-2xl font-serif italic mb-8 opacity-70 transition-all duration-700 ${cat.textColor}`}>{cat.name}</div>
-                <p className="text-[9px] text-gray-500 leading-loose tracking-[0.3em] mb-10">{cat.label}</p>
+                <p className="text-[9px] text-gray-500 leading-snug md:leading-loose tracking-[0.3em] mb-10">{cat.label}</p>
                 <div className={`w-10 h-px bg-white/10 group-hover:w-20 transition-all duration-1000 ${cat.lineColor}`} />
               </div>
             ))}
@@ -151,7 +151,7 @@ export default function HomePage() {
               className="concept-grid-item hover:bg-white/8 hover:before:border-white/50 p-16 md:p-20 flex flex-col items-center text-center group w-full md:w-1/3"
             >
               <div className="text-2xl font-serif italic mb-8 opacity-70 transition-all duration-700 group-hover:text-white">Study</div>
-              <p className="text-[9px] text-gray-500 leading-loose tracking-[0.3em] mb-10">孤独な闘い、夜明けを待つペン先。</p>
+              <p className="text-[9px] text-gray-500 leading-snug md:leading-loose tracking-[0.3em] mb-10">孤独な闘い、夜明けを待つペン先。</p>
               <div className="w-10 h-px bg-white/10 group-hover:w-20 group-hover:bg-white transition-all duration-1000" />
             </div>
           </div>

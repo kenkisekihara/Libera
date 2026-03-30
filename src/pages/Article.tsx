@@ -62,8 +62,8 @@ export default function ArticlePage() {
         dangerouslySetInnerHTML={{ __html: article.content || '' }}
       />
 
-      <div className="mt-32 pt-16 border-t border-white/10 text-center">
-        <Link to="/" className="text-[10px] tracking-[0.5em] uppercase text-white/60 hover:text-white transition-colors">Back to Home</Link>
+      <div className="mt-32 text-center">
+        <Link to="/" className="inline-block px-12 py-4 border border-white/60 text-[10px] tracking-[0.5em] uppercase text-white/90 hover:text-white hover:border-white transition-all duration-300">Back to Home</Link>
       </div>
     </motion.div>
   );
