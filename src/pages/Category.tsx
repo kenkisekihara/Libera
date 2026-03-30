@@ -78,7 +78,7 @@ export default function CategoryPage() {
                 <img 
                   src={article.image} 
                   alt={article.title}
-                  className="w-full h-full object-cover grayscale brightness-75 transition-all duration-700 group-hover:grayscale-0 group-hover:brightness-100 group-hover:scale-105"
+                  className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
                   referrerPolicy="no-referrer"
                 />
               </div>
