@@ -88,8 +88,9 @@ export default function HomePage() {
           <motion.div 
             ref={sliderRef}
             drag="x"
-            dragConstraints={{ right: -loopDistance * (displayArticles.length / articles.length - 1), left: -loopDistance }}
-            dragElastic={0.05}
+            dragConstraints={{ right: 0, left: -loopDistance }}
+            dragElastic={0.2}
+            dragTransition={{ bounceStiffness: 100, bounceDamping: 20 }}
             animate={loopDistance > 0 ? { x: [0, -loopDistance] } : {}}
             transition={{ 
               x: {
@@ -99,7 +100,7 @@ export default function HomePage() {
                 ease: "linear",
               }
             }}
-            className="flex px-8 md:px-16"
+            className="flex px-8 md:px-16 touch-pan-y"
           >
             {displayArticles.map((article, idx) => (
               <div 
