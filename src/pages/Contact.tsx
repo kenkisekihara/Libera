@@ -1,131 +1,71 @@
-import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 
 export default function ContactPage() {
-  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-  const [errorMessage, setErrorMessage] = useState('');
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setStatus('loading');
-    setErrorMessage('');
-
-    try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to send message');
-      }
-
-      setStatus('success');
-      setFormData({ name: '', email: '', message: '' });
-    } catch (error: any) {
-      console.error('Contact form error:', error);
-      setStatus('error');
-      setErrorMessage(error.message || '予期せぬエラーが発生しました。');
-    }
-  };
-
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.8 }}
-      className="pt-[180px] pb-[100px] min-h-[80vh] px-8 md:px-16 max-w-2xl mx-auto"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+      className="pt-48 pb-40 px-8 md:px-16 max-w-screen-xl mx-auto min-h-screen"
     >
       <Helmet>
         <title>Contact | Libera</title>
-        <meta name="description" content="Liberaへのお問い合わせはこちらから。" />
-        <meta property="og:title" content="Contact | Libera" />
-        <meta property="og:description" content="Liberaへのお問い合わせはこちらから。" />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content={window.location.href} />
       </Helmet>
 
-      <div className="relative text-center mb-24 select-none pointer-events-none">
-        <div className="font-serif italic text-[clamp(6rem,15vw,12rem)] leading-[0.8] text-white/5">
-          CONTACT
-        </div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-serif text-[clamp(2rem,5vw,4rem)] text-white tracking-[0.2em] whitespace-nowrap">
-          CONTACT
-        </div>
+      <div className="flex items-center gap-5 mb-16">
+        <div className="w-px h-7 bg-white/30" />
+        <span className="font-light text-[1.2rem] tracking-[0.35em] text-white/70 uppercase">Contact</span>
       </div>
 
-      {status === 'success' ? (
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center py-20"
-        >
-          <div className="text-white text-xl font-light tracking-widest mb-8">お問い合わせありがとうございます。</div>
-          <p className="text-white/60 text-sm tracking-wider mb-12">メッセージは正常に送信されました。内容を確認次第、ご連絡いたします。</p>
-          <Link to="/" className="text-[10px] tracking-[0.5em] uppercase text-white/60 hover:text-white transition-colors border-b border-white/20 pb-1">Back to Home</Link>
-        </motion.div>
-      ) : (
-        <form onSubmit={handleSubmit} className="space-y-12">
-          <div className="space-y-4">
-            <label className="block text-[10px] tracking-[0.4em] text-white/40 uppercase">Name</label>
-            <input
-              type="text"
-              required
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-24">
+        <div>
+          <h1 className="brand-logo-styled text-6xl mb-12">Get in Touch</h1>
+          <p className="text-gray-400 font-light tracking-widest leading-loose mb-12">
+            「Libera」の世界観や、記録された雫についてのご質問、<br />
+            あるいは共鳴する何かを感じた方は、こちらからご連絡ください。
+          </p>
+          
+          <div className="space-y-8">
+            <div>
+              <div className="text-[10px] tracking-[0.5em] text-white/30 uppercase mb-2">Email</div>
+              <div className="text-white font-light tracking-widest">contact@libera.archive</div>
+            </div>
+            <div>
+              <div className="text-[10px] tracking-[0.5em] text-white/30 uppercase mb-2">Social</div>
+              <div className="text-white font-light tracking-widest">@libera_archive</div>
+            </div>
+          </div>
+        </div>
+
+        <form className="space-y-12">
+          <div className="space-y-2">
+            <label className="text-[10px] tracking-[0.5em] text-white/30 uppercase">Name</label>
+            <input 
+              type="text" 
               className="w-full bg-transparent border-b border-white/10 py-4 text-white font-light tracking-widest focus:outline-none focus:border-white/40 transition-colors"
-              placeholder="お名前"
             />
           </div>
-
-          <div className="space-y-4">
-            <label className="block text-[10px] tracking-[0.4em] text-white/40 uppercase">Email</label>
-            <input
-              type="email"
-              required
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+          <div className="space-y-2">
+            <label className="text-[10px] tracking-[0.5em] text-white/30 uppercase">Email</label>
+            <input 
+              type="email" 
               className="w-full bg-transparent border-b border-white/10 py-4 text-white font-light tracking-widest focus:outline-none focus:border-white/40 transition-colors"
-              placeholder="メールアドレス"
             />
           </div>
-
-          <div className="space-y-4">
-            <label className="block text-[10px] tracking-[0.4em] text-white/40 uppercase">Message</label>
-            <textarea
-              required
-              rows={5}
-              value={formData.message}
-              onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+          <div className="space-y-2">
+            <label className="text-[10px] tracking-[0.5em] text-white/30 uppercase">Message</label>
+            <textarea 
+              rows={4}
               className="w-full bg-transparent border-b border-white/10 py-4 text-white font-light tracking-widest focus:outline-none focus:border-white/40 transition-colors resize-none"
-              placeholder="お問い合わせ内容"
             />
           </div>
-
-          {status === 'error' && (
-            <div className="text-red-400 text-[11px] tracking-widest text-center">{errorMessage}</div>
-          )}
-
-          <div className="pt-8 flex justify-center">
-            <button
-              type="submit"
-              disabled={status === 'loading'}
-              className="group relative px-16 py-6 overflow-hidden border border-white/10 transition-all hover:border-white/40 disabled:opacity-50"
-            >
-              <span className="relative z-10 text-[11px] tracking-[0.6em] text-white uppercase font-light">
-                {status === 'loading' ? 'Sending...' : 'Send Message'}
-              </span>
-              <div className="absolute inset-0 bg-white/5 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
-            </button>
-          </div>
+          <button className="contact-btn w-full py-6 uppercase tracking-[0.5em] text-[10px]">
+            Send Message
+          </button>
         </form>
-      )}
+      </div>
     </motion.div>
   );
 }

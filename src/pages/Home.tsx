@@ -52,23 +52,42 @@ export default function HomePage() {
 
   useEffect(() => {
     if (sliderRef.current && articles.length > 0) {
-      // Calculate the width of exactly one set of articles
-      // Since we repeat the list, the loop distance is total width divided by the number of repetitions
-      const totalWidth = sliderRef.current.scrollWidth;
-      const repetitions = articles.length < 4 ? 4 : 2;
-      setLoopDistance(totalWidth / repetitions);
-    }
-  }, [articles]);
-
-  // Auto-scroll animation
-  useAnimationFrame((t, delta) => {
-    if (loopDistance > 0 && !isDragging && !isHovered) {
-      const speed = loopDistance / (articles.length * 8000); // px per ms
-      let newX = x.get() - speed * delta;
-      if (newX <= -loopDistance) {
-        newX += loopDistance;
+      const children = sliderRef.current.children;
+      if (children.length >= articles.length * 2) {
+        const firstChild = children[0] as HTMLElement;
+        const nextSetFirstChild = children[articles.length] as HTMLElement;
+        
+        if (firstChild && nextSetFirstChild) {
+          const singleSetWidth = nextSetFirstChild.offsetLeft - firstChild.offsetLeft;
+          setLoopDistance(singleSetWidth);
+          // Initialize to the center (20th set)
+          if (x.get() === 0) {
+            x.set(-singleSetWidth * 20);
+          }
+        }
       }
-      x.set(newX);
+    }
+  }, [articles, x]);
+
+  // Auto-scroll and silent snap animation
+  useAnimationFrame((t, delta) => {
+    if (loopDistance === 0) return;
+
+    if (!isDragging && !isHovered) {
+      const speed = loopDistance / (articles.length * 8000); // px per ms
+      x.set(x.get() - speed * delta);
+    }
+
+    // Silent snap when momentum has settled
+    if (!isDragging && Math.abs(x.getVelocity()) < 50) {
+      const currentX = x.get();
+      // If drifted more than 5 sets from the center (-20 sets)
+      if (currentX < -loopDistance * 25 || currentX > -loopDistance * 15) {
+        const mod = currentX % loopDistance;
+        let wrapped = mod;
+        if (wrapped > 0) wrapped -= loopDistance;
+        x.set(wrapped - loopDistance * 20);
+      }
     }
   });
 
@@ -83,15 +102,7 @@ export default function HomePage() {
       // Only intercept horizontal scrolling
       if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
         e.preventDefault();
-        let newX = x.get() - e.deltaX;
-        
-        // Infinite wrap around
-        if (newX <= -loopDistance) {
-          newX += loopDistance;
-        } else if (newX > 0) {
-          newX -= loopDistance;
-        }
-        x.set(newX);
+        x.set(x.get() - e.deltaX);
       }
     };
 
@@ -99,9 +110,9 @@ export default function HomePage() {
     return () => container.removeEventListener('wheel', onWheel);
   }, [loopDistance, x]);
 
-  // Repeat articles to ensure the slider is always full and loops seamlessly
+  // Render 40 sets to ensure the user never hits the edge during a single drag
   const displayArticles = articles.length > 0 
-    ? (articles.length < 4 ? [...articles, ...articles, ...articles, ...articles] : [...articles, ...articles])
+    ? Array(40).fill(articles).flat()
     : [];
 
   return (
@@ -120,7 +131,7 @@ export default function HomePage() {
         <meta property="og:url" content={window.location.href} />
       </Helmet>
 
-      <header className="relative min-h-screen flex flex-col justify-start overflow-hidden pt-48">
+      <header className="relative min-h-screen flex flex-col justify-start overflow-hidden pt-32 md:pt-48">
         <div className="max-w-screen-2xl w-full mx-auto px-8 md:px-16 mb-8">
           <div className="flex items-center gap-5">
             <div className="w-px h-7 bg-white/30" />
@@ -137,8 +148,7 @@ export default function HomePage() {
           <motion.div 
             ref={sliderRef}
             drag="x"
-            dragConstraints={{ right: 0, left: -loopDistance }}
-            dragElastic={0.2}
+            dragConstraints={loopDistance > 0 ? { right: 0, left: -loopDistance * 39 } : undefined}
             dragTransition={{ bounceStiffness: 100, bounceDamping: 20 }}
             onDragStart={() => setIsDragging(true)}
             onDragEnd={() => setIsDragging(false)}

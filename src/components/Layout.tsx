@@ -33,8 +33,8 @@ export default function Layout({ children }: { children: ReactNode }) {
       <nav 
         className={`fixed top-0 left-0 w-full z-50 px-6 md:px-16 transition-all duration-500 flex justify-between items-center ${
           isScrolled 
-            ? 'bg-bg/85 backdrop-blur-md py-4 md:py-6' 
-            : 'bg-transparent py-8 md:py-10'
+            ? 'bg-bg/85 backdrop-blur-md py-3 md:py-6' 
+            : 'bg-transparent py-5 md:py-10'
         }`}
       >
         <Link to="/" className="flex flex-col group text-left">
@@ -126,9 +126,6 @@ export default function Layout({ children }: { children: ReactNode }) {
 
       <footer className="py-40 text-center flex flex-col items-center">
         <Link to="/" className="brand-logo-styled text-4xl mb-8 opacity-60 cursor-pointer">Libera</Link>
-        <div className="flex space-x-8 mb-12">
-          <Link to="/contact" className="text-[9px] tracking-[0.5em] uppercase text-white/30 hover:text-white transition-colors">Contact</Link>
-        </div>
         <p className="text-[7px] text-gray-700 tracking-[1.2em] uppercase">© 2026 LIBERA.</p>
       </footer>
     </div>
