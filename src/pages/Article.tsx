@@ -25,7 +25,8 @@ export default function ArticlePage() {
             title: found.title,
             date: new Date(found.publishedAt || found.createdAt).toLocaleDateString('ja-JP').replace(/\//g, '.'),
             image: found.image?.url,
-            category: found.category?.[0] || 'home'
+            category: found.category?.[0] || 'home',
+            content: found.content || found.body || ''
           });
         }
       } catch (error) {
@@ -56,9 +57,10 @@ export default function ArticlePage() {
         <img src={article.image} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
       </div>
 
-      <div className="text-white/80 leading-relaxed tracking-wider font-light text-lg">
-        <p className="mb-8">本文はmicroCMSから取得した内容が表示されます。</p>
-      </div>
+      <div 
+        className="text-white/80 leading-relaxed tracking-wider font-light text-lg article-content"
+        dangerouslySetInnerHTML={{ __html: article.content || '' }}
+      />
 
       <div className="mt-32 pt-16 border-t border-white/10 text-center">
         <Link to="/" className="text-[10px] tracking-[0.5em] uppercase text-white/60 hover:text-white transition-colors">Back to Home</Link>

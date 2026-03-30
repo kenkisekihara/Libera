@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import { Article, CATEGORIES } from '../types';
 
 export default function HomePage() {
   const [articles, setArticles] = useState<Article[]>([]);
+  const [dragWidth, setDragWidth] = useState(0);
+  const sliderRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -35,6 +37,12 @@ export default function HomePage() {
     fetchArticles();
   }, []);
 
+  useEffect(() => {
+    if (sliderRef.current) {
+      setDragWidth(sliderRef.current.scrollWidth - sliderRef.current.offsetWidth);
+    }
+  }, [articles]);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -50,19 +58,25 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className="w-screen overflow-hidden relative pb-24">
+        <div className="w-screen overflow-hidden relative pb-24 cursor-grab active:cursor-grabbing">
           <motion.div 
-            className="flex"
-            animate={{ x: [0, -1494] }}
-            transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+            ref={sliderRef}
+            drag="x"
+            dragConstraints={{ right: 0, left: -dragWidth }}
+            dragElastic={0.1}
+            className="flex px-8 md:px-16"
           >
-            {[...articles, ...articles].map((article, idx) => (
-              <div key={`${article.id}-${idx}`} onClick={() => navigate(`/article/${article.id}`)} className="flex-none w-[450px] mr-12 group cursor-pointer">
+            {articles.map((article) => (
+              <div 
+                key={article.id} 
+                onClick={() => navigate(`/article/${article.id}`)} 
+                className="flex-none w-[300px] md:w-[450px] mr-12 group cursor-pointer select-none"
+              >
                 <div className="w-full aspect-square overflow-hidden bg-[#151921]">
                   <img 
                     src={article.image} 
                     alt={article.title}
-                    className="w-full h-full object-cover grayscale brightness-75 transition-all duration-800 group-hover:grayscale-0 group-hover:brightness-100 group-hover:scale-105"
+                    className="w-full h-full object-cover grayscale brightness-75 transition-all duration-800 group-hover:grayscale-0 group-hover:brightness-100 group-hover:scale-105 pointer-events-none"
                     referrerPolicy="no-referrer"
                   />
                 </div>

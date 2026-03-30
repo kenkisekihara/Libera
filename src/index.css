@@ -74,4 +74,36 @@
   .concept-grid-item:hover::before {
     @apply opacity-100;
   }
+
+  .article-content p {
+    @apply mb-8 leading-relaxed;
+  }
+
+  .article-content h2 {
+    @apply text-2xl font-light text-white tracking-widest mt-16 mb-8 border-l-2 border-white/20 pl-6;
+  }
+
+  .article-content h3 {
+    @apply text-xl font-light text-white tracking-widest mt-12 mb-6;
+  }
+
+  .article-content img {
+    @apply w-full h-auto my-12 grayscale brightness-90 transition-all duration-700 hover:grayscale-0 hover:brightness-100;
+  }
+
+  .article-content ul, .article-content ol {
+    @apply mb-8 pl-6 space-y-4;
+  }
+
+  .article-content ul {
+    @apply list-disc;
+  }
+
+  .article-content ol {
+    @apply list-decimal;
+  }
+
+  .article-content a {
+    @apply text-white border-b border-white/20 hover:border-white transition-colors;
+  }
 }

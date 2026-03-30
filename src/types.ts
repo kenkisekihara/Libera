@@ -6,6 +6,7 @@ export interface Article {
   date: string;
   image: string;
   category: string;
+  content?: string;
 }
 
 export const CATEGORIES = [
