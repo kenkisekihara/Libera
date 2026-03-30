@@ -1,16 +1,25 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronDown } from 'lucide-react';
+import { 
+  BrowserRouter as Router, 
+  Routes, 
+  Route, 
+  Link, 
+  useNavigate, 
+  useParams, 
+  useLocation 
+} from 'react-router-dom';
 
 // --- Types ---
-type Category = 'Beauty' | 'Fashion' | 'Food' | 'Drink' | 'Mrs. GREEN APPLE' | 'Events' | 'Study' | 'home';
+type CategoryName = 'Beauty' | 'Fashion' | 'Food' | 'Drink' | 'Mrs. GREEN APPLE' | 'Events' | 'Study';
 
 interface Article {
   id: number;
   title: string;
   date: string;
   image: string;
-  category: Category;
+  category: string;
 }
 
 // --- Mock Data ---
@@ -48,11 +57,12 @@ const CATEGORIES = [
   { name: 'Study', label: '孤独な闘い、夜明けを待つペン先。', color: 'hover:bg-white/8 hover:before:border-white/50', textColor: 'group-hover:text-white', lineColor: 'group-hover:bg-white' },
 ];
 
-export default function App() {
-  const [currentCategory, setCurrentCategory] = useState<Category>('home');
+// --- Components ---
+
+function Layout({ children }: { children: ReactNode }) {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [articles, setArticles] = useState<Article[]>(ARTICLES);
-  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -62,39 +72,10 @@ export default function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Scroll to top on route change
   useEffect(() => {
-    const fetchArticles = async () => {
-      try {
-        const response = await fetch('/api/articles');
-        if (!response.ok) throw new Error('Failed to fetch');
-        const data = await response.json();
-        
-        if (data.contents && data.contents.length > 0) {
-          // Map microCMS response to our Article type
-          const mappedArticles: Article[] = data.contents.map((item: any) => ({
-            id: item.id,
-            title: item.title,
-            date: new Date(item.publishedAt || item.createdAt).toLocaleDateString('ja-JP').replace(/\//g, '.'),
-            image: item.image?.url || 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&q=80&w=800',
-            category: item.category?.[0] || 'home'
-          }));
-          setArticles(mappedArticles);
-        }
-      } catch (error) {
-        console.error('Error fetching articles:', error);
-        // Fallback to mock data (already set in initial state)
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchArticles();
-  }, []);
-
-  const navigateTo = (cat: Category) => {
-    setCurrentCategory(cat);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  }, [location.pathname]);
 
   return (
     <div className="min-h-screen bg-bg selection:bg-white/20">
@@ -108,28 +89,31 @@ export default function App() {
             : 'bg-transparent py-10'
         }`}
       >
-        <button onClick={() => navigateTo('home')} className="flex flex-col group text-left">
+        <Link to="/" className="flex flex-col group text-left">
           <span className="brand-logo-styled text-[2.8rem]">Libera</span>
-        </button>
+        </Link>
 
         <div className="hidden md:flex space-x-12 text-[10px] tracking-[0.5em] uppercase items-center font-medium">
           <div className="nav-item group">
             <span>Hobby</span>
             <ChevronDown size={12} strokeWidth={1.5} />
             <div className="dropdown-menu">
-              <button onClick={() => navigateTo('Beauty')} className="dropdown-link text-left">Beauty</button>
-              <button onClick={() => navigateTo('Fashion')} className="dropdown-link text-left">Fashion</button>
-              <button onClick={() => navigateTo('Food')} className="dropdown-link text-left">Food</button>
-              <button onClick={() => navigateTo('Drink')} className="dropdown-link text-left">Drink</button>
-              <button onClick={() => navigateTo('Mrs. GREEN APPLE')} className="dropdown-link text-left" style={{ textTransform: 'none' }}>Mrs. GREEN APPLE</button>
+              {['Beauty', 'Fashion', 'Food', 'Drink', 'Mrs. GREEN APPLE'].map((cat) => (
+                <Link key={cat} to={`/category/${cat}`} className="dropdown-link text-left" style={cat === 'Mrs. GREEN APPLE' ? { textTransform: 'none' } : {}}>
+                  {cat}
+                </Link>
+              ))}
             </div>
           </div>
           <div className="nav-item group">
             <span>Daily</span>
             <ChevronDown size={12} strokeWidth={1.5} />
             <div className="dropdown-menu">
-              <button onClick={() => navigateTo('Events')} className="dropdown-link text-left">Events</button>
-              <button onClick={() => navigateTo('Study')} className="dropdown-link text-left">Study</button>
+              {['Events', 'Study'].map((cat) => (
+                <Link key={cat} to={`/category/${cat}`} className="dropdown-link text-left">
+                  {cat}
+                </Link>
+              ))}
             </div>
           </div>
           <div className="pl-12 relative flex items-center">
@@ -140,138 +124,186 @@ export default function App() {
         </div>
       </nav>
 
-      <AnimatePresence mode="wait">
-        {currentCategory === 'home' ? (
-          <motion.div
-            key="home"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-          >
-            {/* --- Hero Slider --- */}
-            <header className="relative min-h-screen flex flex-col justify-start overflow-hidden pt-48">
-              <div className="max-w-screen-2xl w-full mx-auto px-8 md:px-16 mb-8">
-                <div className="flex items-center gap-5">
-                  <div className="w-px h-7 bg-white/30" />
-                  <span className="font-light text-[1.2rem] tracking-[0.35em] text-white/70">NEW ARTICLE</span>
-                </div>
-              </div>
-
-              <div className="w-screen overflow-hidden relative pb-24">
-                <motion.div 
-                  className="flex"
-                  animate={{ x: [0, -1494] }} // (450 + 48) * 3 = 1494
-                  transition={{ 
-                    duration: 30, 
-                    repeat: Infinity, 
-                    ease: "linear" 
-                  }}
-                >
-                  {[...articles, ...articles].map((article, idx) => (
-                    <div key={`${article.id}-${idx}`} className="flex-none w-[450px] mr-12 group cursor-pointer">
-                      <div className="w-full aspect-square overflow-hidden bg-[#151921]">
-                        <img 
-                          src={article.image} 
-                          alt={article.title}
-                          className="w-full h-full object-cover grayscale brightness-75 transition-all duration-800 group-hover:grayscale-0 group-hover:brightness-100 group-hover:scale-105"
-                          referrerPolicy="no-referrer"
-                        />
-                      </div>
-                      <div className="mt-6 text-left">
-                        <div className="text-white text-lg font-light tracking-widest mb-1">{article.title}</div>
-                        <div className="text-gray-400 text-[10px] tracking-[0.3em]">{article.date}</div>
-                      </div>
-                    </div>
-                  ))}
-                </motion.div>
-              </div>
-            </header>
-
-            {/* --- About Section --- */}
-            <section className="flex flex-col items-center text-center px-[10%] pt-40 bg-bg relative">
-              <div className="flex flex-col items-center mb-16">
-                <div className="text-[13px] tracking-[0.5em] text-white uppercase font-extralight pb-3">About</div>
-                <div className="w-[60px] h-px bg-white/60" />
-              </div>
-              
-              <h2 className="brand-logo-styled text-[clamp(4rem,10vw,8rem)] mb-16">Libera</h2>
-              <div className="text-[14px] leading-[3] font-extralight tracking-[0.25em] text-white/70 max-w-[800px] mb-32">
-                孤独とは、誰にも邪魔されない自由のこと。<br />
-                「Libera」は、勉強、音楽、美、そして日々の雫を記録し、<br />
-                僕だけの世界観を記録的に構築するためのアーカイブ。
-              </div>
-
-              <div className="w-full flex flex-col items-center mb-16">
-                <div className="w-px h-[280px] bg-gradient-to-b from-transparent via-white/5 to-white relative mb-16 after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-1 after:h-1 after:bg-white after:rounded-full after:shadow-[0_0_15px_2px_white]" />
-              </div>
-
-              <div className="flex flex-col items-center mb-16">
-                <div className="text-[13px] tracking-[0.5em] text-white uppercase font-extralight pb-3">Menu</div>
-                <div className="w-[60px] h-px bg-white/60" />
-              </div>
-
-              <div className="w-full max-w-6xl mx-auto px-8 mt-12 mb-20">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                  {CATEGORIES.slice(0, 6).map((cat) => (
-                    <div 
-                      key={cat.name}
-                      onClick={() => navigateTo(cat.name as Category)}
-                      className={`concept-grid-item ${cat.color} p-16 md:p-20 flex flex-col items-center text-center group`}
-                    >
-                      <div className={`text-2xl font-serif italic mb-8 opacity-70 transition-all duration-700 ${cat.textColor}`}>{cat.name}</div>
-                      <p className="text-[9px] text-gray-500 leading-loose tracking-[0.3em] mb-10">{cat.label}</p>
-                      <div className={`w-10 h-px bg-white/10 group-hover:w-20 transition-all duration-1000 ${cat.lineColor}`} />
-                    </div>
-                  ))}
-                </div>
-                
-                <div className="mt-8 flex justify-center">
-                  <div 
-                    onClick={() => navigateTo('Study')}
-                    className="concept-grid-item hover:bg-white/8 hover:before:border-white/50 p-16 md:p-20 flex flex-col items-center text-center group w-full md:w-1/3"
-                  >
-                    <div className="text-2xl font-serif italic mb-8 opacity-70 transition-all duration-700 group-hover:text-white">Study</div>
-                    <p className="text-[9px] text-gray-500 leading-loose tracking-[0.3em] mb-10">孤独な闘い、夜明けを待つペン先。</p>
-                    <div className="w-10 h-px bg-white/10 group-hover:w-20 group-hover:bg-white transition-all duration-1000" />
-                  </div>
-                </div>
-
-                <div className="w-full flex flex-col items-center mt-20">
-                  <div className="w-px h-[280px] bg-gradient-to-b from-transparent via-white/5 to-white relative after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-1 after:h-1 after:bg-white after:rounded-full after:shadow-[0_0_15px_2px_white]" />
-                </div>
-              </div>
-            </section>
-          </motion.div>
-        ) : (
-          <motion.div
-            key="category"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.8 }}
-            className="pt-[180px] pb-[100px] min-h-[80vh]"
-          >
-            <div className="relative text-center mb-16 select-none pointer-events-none">
-              <div className="font-serif italic text-[clamp(6rem,15vw,12rem)] leading-[0.8] text-white/5">
-                {currentCategory.toUpperCase()}
-              </div>
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-serif text-[clamp(2rem,5vw,4rem)] text-white tracking-[0.2em] whitespace-nowrap">
-                {currentCategory.toUpperCase()}
-              </div>
-            </div>
-
-            <div className="text-center text-[11px] text-white/40 tracking-[0.3em] mt-[10vh] font-light">
-              まだ記事が存在しません。
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <main>{children}</main>
 
       <footer className="py-40 text-center">
-        <button onClick={() => navigateTo('home')} className="brand-logo-styled text-4xl mb-8 opacity-60 cursor-pointer">Libera</button>
+        <Link to="/" className="brand-logo-styled text-4xl mb-8 opacity-60 cursor-pointer">Libera</Link>
         <p className="text-[7px] text-gray-700 tracking-[1.2em] uppercase">© 2026 LIBERA.</p>
       </footer>
     </div>
+  );
+}
+
+function HomePage() {
+  const [articles, setArticles] = useState<Article[]>(ARTICLES);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchArticles = async () => {
+      try {
+        const response = await fetch('/api/articles');
+        if (!response.ok) throw new Error('Failed to fetch');
+        const data = await response.json();
+        
+        if (data.contents && data.contents.length > 0) {
+          const mappedArticles: Article[] = data.contents.map((item: any) => ({
+            id: item.id,
+            title: item.title,
+            date: new Date(item.publishedAt || item.createdAt).toLocaleDateString('ja-JP').replace(/\//g, '.'),
+            image: item.image?.url || 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&q=80&w=800',
+            category: item.category?.[0] || 'home'
+          }));
+          setArticles(mappedArticles);
+        }
+      } catch (error) {
+        console.error('Error fetching articles:', error);
+      }
+    };
+    fetchArticles();
+  }, []);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+    >
+      {/* --- Hero Slider --- */}
+      <header className="relative min-h-screen flex flex-col justify-start overflow-hidden pt-48">
+        <div className="max-w-screen-2xl w-full mx-auto px-8 md:px-16 mb-8">
+          <div className="flex items-center gap-5">
+            <div className="w-px h-7 bg-white/30" />
+            <span className="font-light text-[1.2rem] tracking-[0.35em] text-white/70">NEW ARTICLE</span>
+          </div>
+        </div>
+
+        <div className="w-screen overflow-hidden relative pb-24">
+          <motion.div 
+            className="flex"
+            animate={{ x: [0, -1494] }} // (450 + 48) * 3 = 1494
+            transition={{ 
+              duration: 30, 
+              repeat: Infinity, 
+              ease: "linear" 
+            }}
+          >
+            {[...articles, ...articles].map((article, idx) => (
+              <div key={`${article.id}-${idx}`} className="flex-none w-[450px] mr-12 group cursor-pointer">
+                <div className="w-full aspect-square overflow-hidden bg-[#151921]">
+                  <img 
+                    src={article.image} 
+                    alt={article.title}
+                    className="w-full h-full object-cover grayscale brightness-75 transition-all duration-800 group-hover:grayscale-0 group-hover:brightness-100 group-hover:scale-105"
+                    referrerPolicy="no-referrer"
+                  />
+                </div>
+                <div className="mt-6 text-left">
+                  <div className="text-white text-lg font-light tracking-widest mb-1">{article.title}</div>
+                  <div className="text-gray-400 text-[10px] tracking-[0.3em]">{article.date}</div>
+                </div>
+              </div>
+            ))}
+          </motion.div>
+        </div>
+      </header>
+
+      {/* --- About Section --- */}
+      <section className="flex flex-col items-center text-center px-[10%] pt-40 bg-bg relative">
+        <div className="flex flex-col items-center mb-16">
+          <div className="text-[13px] tracking-[0.5em] text-white uppercase font-extralight pb-3">About</div>
+          <div className="w-[60px] h-px bg-white/60" />
+        </div>
+        
+        <h2 className="brand-logo-styled text-[clamp(4rem,10vw,8rem)] mb-16">Libera</h2>
+        <div className="text-[14px] leading-[3] font-extralight tracking-[0.25em] text-white/70 max-w-[800px] mb-32">
+          孤独とは、誰にも邪魔されない自由のこと。<br />
+          「Libera」は、勉強、音楽、美、そして日々の雫を記録し、<br />
+          僕だけの世界観を記録的に構築するためのアーカイブ。
+        </div>
+
+        <div className="w-full flex flex-col items-center mb-16">
+          <div className="w-px h-[280px] bg-gradient-to-b from-transparent via-white/5 to-white relative mb-16 after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-1 after:h-1 after:bg-white after:rounded-full after:shadow-[0_0_15px_2px_white]" />
+        </div>
+
+        <div className="flex flex-col items-center mb-16">
+          <div className="text-[13px] tracking-[0.5em] text-white uppercase font-extralight pb-3">Menu</div>
+          <div className="w-[60px] h-px bg-white/60" />
+        </div>
+
+        <div className="w-full max-w-6xl mx-auto px-8 mt-12 mb-20">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {CATEGORIES.slice(0, 6).map((cat) => (
+              <div 
+                key={cat.name}
+                onClick={() => navigate(cat.name === 'home' ? '/' : `/category/${cat.name}`)}
+                className={`concept-grid-item ${cat.color} p-16 md:p-20 flex flex-col items-center text-center group`}
+              >
+                <div className={`text-2xl font-serif italic mb-8 opacity-70 transition-all duration-700 ${cat.textColor}`}>{cat.name}</div>
+                <p className="text-[9px] text-gray-500 leading-loose tracking-[0.3em] mb-10">{cat.label}</p>
+                <div className={`w-10 h-px bg-white/10 group-hover:w-20 transition-all duration-1000 ${cat.lineColor}`} />
+              </div>
+            ))}
+          </div>
+          
+          <div className="mt-8 flex justify-center">
+            <div 
+              onClick={() => navigate('/category/Study')}
+              className="concept-grid-item hover:bg-white/8 hover:before:border-white/50 p-16 md:p-20 flex flex-col items-center text-center group w-full md:w-1/3"
+            >
+              <div className="text-2xl font-serif italic mb-8 opacity-70 transition-all duration-700 group-hover:text-white">Study</div>
+              <p className="text-[9px] text-gray-500 leading-loose tracking-[0.3em] mb-10">孤独な闘い、夜明けを待つペン先。</p>
+              <div className="w-10 h-px bg-white/10 group-hover:w-20 group-hover:bg-white transition-all duration-1000" />
+            </div>
+          </div>
+
+          <div className="w-full flex flex-col items-center mt-20">
+            <div className="w-px h-[280px] bg-gradient-to-b from-transparent via-white/5 to-white relative after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-1 after:h-1 after:bg-white after:rounded-full after:shadow-[0_0_15px_2px_white]" />
+          </div>
+        </div>
+      </section>
+    </motion.div>
+  );
+}
+
+function CategoryPage() {
+  const { categoryName } = useParams<{ categoryName: string }>();
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.8 }}
+      className="pt-[180px] pb-[100px] min-h-[80vh]"
+    >
+      <div className="relative text-center mb-16 select-none pointer-events-none">
+        <div className="font-serif italic text-[clamp(6rem,15vw,12rem)] leading-[0.8] text-white/5">
+          {categoryName?.toUpperCase()}
+        </div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-serif text-[clamp(2rem,5vw,4rem)] text-white tracking-[0.2em] whitespace-nowrap">
+          {categoryName?.toUpperCase()}
+        </div>
+      </div>
+
+      <div className="text-center text-[11px] text-white/40 tracking-[0.3em] mt-[10vh] font-light">
+        まだ記事が存在しません。
+      </div>
+    </motion.div>
+  );
+}
+
+export default function App() {
+  return (
+    <Router>
+      <Layout>
+        <AnimatePresence mode="wait">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/category/:categoryName" element={<CategoryPage />} />
+          </Routes>
+        </AnimatePresence>
+      </Layout>
+    </Router>
   );
 }
