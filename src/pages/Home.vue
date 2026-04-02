@@ -64,22 +64,19 @@
         <span class="font-light text-[1.2rem] tracking-[0.35em] text-white/70 uppercase">Categories</span>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-20">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         <div 
           v-for="cat in CATEGORIES" 
           :key="cat.name"
           @click="router.push(`/category/${cat.name}`)"
-          class="group cursor-pointer"
+          :class="['concept-grid-item p-12 flex flex-col justify-center min-h-[280px] group', cat.color]"
         >
-          <div class="relative pl-8 py-4">
-            <div :class="['absolute left-0 top-0 bottom-0 w-px bg-white/10 transition-colors duration-500', cat.lineColor]" />
-            <h3 :class="['text-xl md:text-2xl font-light tracking-widest text-white/80 mb-4 transition-colors duration-500', cat.textColor]">
-              {{ cat.name }}
-            </h3>
-            <p class="text-[11px] tracking-[0.2em] text-gray-500 leading-loose group-hover:text-white/60 transition-colors duration-500">
-              {{ cat.label }}
-            </p>
-          </div>
+          <h3 :class="['text-2xl font-light tracking-widest text-white/80 mb-6 transition-colors duration-500', cat.textColor]">
+            {{ cat.name }}
+          </h3>
+          <p class="text-[11px] tracking-[0.2em] text-gray-500 leading-loose group-hover:text-white/60 transition-colors duration-500">
+            {{ cat.label }}
+          </p>
         </div>
       </div>
     </section>
