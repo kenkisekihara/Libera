@@ -34,12 +34,27 @@ export default function HomePage() {
             return cat.name || 'home';
           };
 
+          const getParentCategory = (cat: any) => {
+            if (!cat) return 'default';
+            if (cat.parent && cat.parent.name) return cat.parent.name;
+            if (cat.parent) return cat.parent;
+            return getCategoryName(cat);
+          };
+
+          const getChildCategory = (cat: any) => {
+            if (!cat) return 'default';
+            if (cat.parent && cat.name) return cat.name;
+            return 'default';
+          };
+
           const mappedArticles: Article[] = data.contents.map((item: any) => ({
             id: item.id,
             title: item.title,
             date: new Date(item.publishedAt || item.createdAt).toLocaleDateString('ja-JP').replace(/\//g, '.'),
             image: item.image?.url || 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&q=80&w=800',
-            category: getCategoryName(item.category)
+            category: getCategoryName(item.category),
+            parentCategory: getParentCategory(item.category),
+            childCategory: getChildCategory(item.category)
           }));
           setArticles(mappedArticles);
         }
@@ -158,7 +173,7 @@ export default function HomePage() {
             {displayArticles.map((article, idx) => (
               <div 
                 key={`${article.id}-${idx}`} 
-                onClick={() => navigate(`/article/${article.id}`)} 
+                onClick={() => navigate(`/${article.parentCategory || 'category'}/${article.childCategory || 'all'}/${article.id}`)} 
                 className="flex-none w-[300px] md:w-[450px] mr-12 group cursor-pointer select-none"
               >
                 <div className="w-full aspect-square overflow-hidden bg-[#151921]">

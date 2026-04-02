@@ -6,6 +6,8 @@ export interface Article {
   date: string;
   image: string;
   category: string;
+  parentCategory?: string;
+  childCategory?: string;
   content?: string;
 }
 

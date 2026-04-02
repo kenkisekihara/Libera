@@ -29,7 +29,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/category/:categoryName" element={<CategoryPage />} />
-            <Route path="/article/:id" element={<ArticlePage />} />
+            <Route path="/:parentCategory/:childCategory/:id" element={<ArticlePage />} />
             <Route path="/contact" element={<ContactPage />} />
           </Routes>
         </AnimatePresence>

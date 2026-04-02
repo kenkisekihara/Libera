@@ -30,13 +30,28 @@ export default function CategoryPage() {
             return cat.name || 'home';
           };
 
+          const getParentCategory = (cat: any) => {
+            if (!cat) return 'default';
+            if (cat.parent && cat.parent.name) return cat.parent.name;
+            if (cat.parent) return cat.parent;
+            return getCategoryName(cat);
+          };
+
+          const getChildCategory = (cat: any) => {
+            if (!cat) return 'default';
+            if (cat.parent && cat.name) return cat.name;
+            return 'default';
+          };
+
           const mappedArticles: Article[] = data.contents
             .map((item: any) => ({
               id: item.id,
               title: item.title,
               date: new Date(item.publishedAt || item.createdAt).toLocaleDateString('ja-JP').replace(/\//g, '.'),
               image: item.image?.url || 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&q=80&w=800',
-              category: getCategoryName(item.category)
+              category: getCategoryName(item.category),
+              parentCategory: getParentCategory(item.category),
+              childCategory: getChildCategory(item.category)
             }))
             .filter((article: Article) => 
               decodedCategory === 'home' ? true : article.category.toLowerCase() === decodedCategory.toLowerCase()
@@ -83,7 +98,7 @@ export default function CategoryPage() {
       ) : articles.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16 max-w-7xl mx-auto">
           {articles.map((article) => (
-            <Link key={article.id} to={`/article/${article.id}`} className="group">
+            <Link key={article.id} to={`/${article.parentCategory || 'category'}/${article.childCategory || 'all'}/${article.id}`} className="group">
               <div className="aspect-square overflow-hidden bg-[#151921] mb-6">
                 <img 
                   src={article.image} 

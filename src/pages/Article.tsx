@@ -28,12 +28,27 @@ export default function ArticlePage() {
             return cat.name || 'home';
           };
 
+          const getParentCategory = (cat: any) => {
+            if (!cat) return 'default';
+            if (cat.parent && cat.parent.name) return cat.parent.name;
+            if (cat.parent) return cat.parent;
+            return getCategoryName(cat);
+          };
+
+          const getChildCategory = (cat: any) => {
+            if (!cat) return 'default';
+            if (cat.parent && cat.name) return cat.name;
+            return 'default';
+          };
+
           setArticle({
             id: found.id,
             title: found.title,
             date: new Date(found.publishedAt || found.createdAt).toLocaleDateString('ja-JP').replace(/\//g, '.'),
             image: found.image?.url,
             category: getCategoryName(found.category),
+            parentCategory: getParentCategory(found.category),
+            childCategory: getChildCategory(found.category),
             content: found.content || found.body || ''
           });
         }
